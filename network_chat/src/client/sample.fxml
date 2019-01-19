@@ -9,7 +9,7 @@
 <?import javafx.scene.control.ScrollPane?>
 
 <?import javafx.scene.text.Text?>
-<VBox fx:id="vbox" fx:controller="sample.Controller" xmlns:fx="http://javafx.com/fxml" alignment="center">
+<VBox fx:id="vbox" fx:controller="client.Controller" xmlns:fx="http://javafx.com/fxml" alignment="center">
     <stylesheets><URL value="@/css/style.css"/></stylesheets>
     <Text fx:id="text" text="СЕТЕВОЙ ЧАТ"/>
     <ScrollPane fx:id="sp" VBox.vgrow="ALWAYS">
