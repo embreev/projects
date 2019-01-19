@@ -1,20 +1,23 @@
 package client;
 
 import javafx.fxml.FXML;
+import javafx.fxml.Initializable;
 import javafx.geometry.NodeOrientation;
-import javafx.scene.control.Button;
-import javafx.scene.control.Label;
-import javafx.scene.control.ScrollPane;
-import javafx.scene.control.TextField;
+import javafx.scene.control.*;
 import javafx.scene.layout.VBox;
 
+import java.io.*;
+import java.net.Socket;
+import java.net.URL;
 import java.util.Date;
+import java.util.ResourceBundle;
 
-public class Controller {
-    static int count = 0;
+public class Controller implements Initializable {
+    private Date date;
+    private Label label;
 
     @FXML
-    VBox msg;
+    TextArea msg;
 
     @FXML
     TextField textField;
@@ -25,26 +28,54 @@ public class Controller {
     @FXML
     ScrollPane sp;
 
-    @FXML
+    private final String SERVER_ADDR = "localhost";
+    private final int SERVER_PORT = 8189;
+    private Socket socket;
+    private DataInputStream in;
+    private DataOutputStream out;
+
+    @Override
+    public void initialize(URL location, ResourceBundle resources) {
+        try {
+            socket = new Socket(SERVER_ADDR, SERVER_PORT);
+            in = new DataInputStream(socket.getInputStream());
+            out = new DataOutputStream(socket.getOutputStream());
+
+            new Thread(new Runnable() {
+                @Override
+                public void run() {
+                    try {
+                        while (true) {
+                            String str = in.readUTF();
+                            if (str.equalsIgnoreCase("closeChat")) break;
+                            msg.appendText(str + "\n");
+                            System.out.println(str);
+                        }
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    } finally {
+                        try {
+                            socket.close();
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                }
+            }).start();
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
     public void sendMessage() {
-        Date date = new Date();
-        Label label = new Label();
-        count++;
-        sp.vvalueProperty().bind(msg.heightProperty());
-        if (!textField.getText().isEmpty()) {
-            if (count % 2 == 0) {
-                label.setText(date + ": " + textField.getText() + "\n");
-                label.setStyle("-fx-text-fill: green;");
-                label.setNodeOrientation(NodeOrientation.RIGHT_TO_LEFT);
-                msg.getChildren().add(label);
-            } else {
-                label.setText(date + ": " + textField.getText() + "\n");
-                label.setStyle("-fx-text-fill: red;");
-                label.setNodeOrientation(NodeOrientation.LEFT_TO_RIGHT);
-                msg.getChildren().add(label);
+        if (!textField.getText().trim().isEmpty()) {
+            try {
+                out.writeUTF(textField.getText());
+                textField.clear();
+                textField.requestFocus();
+            } catch (IOException e) {
+                e.printStackTrace();
             }
         }
-        textField.clear();
-        textField.requestFocus();
     }
 }
