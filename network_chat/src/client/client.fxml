@@ -15,17 +15,17 @@
     <stylesheets><URL value="@/css/style.css"/></stylesheets>
 
     <HBox fx:id="upperPanel">
-        <TextField HBox.hgrow="ALWAYS" promptText="Логин" fx:id="loginField"/>
-        <PasswordField promptText="Пароль" fx:id="passwordField" onAction="#tryToAuth"/>
-        <Button text="Авторизоваться" onAction="#tryToAuth"/>
+        <TextField HBox.hgrow="ALWAYS" promptText="Login" fx:id="loginField"/>
+        <PasswordField promptText="Password" fx:id="passwordField" onAction="#tryToAuth"/>
+        <Button text="Sign in" onAction="#tryToAuth"/>
     </HBox>
 
-    <Text fx:id="text" text="СЕТЕВОЙ ЧАТ"/>
+    <Text fx:id="text" text="Network Chat"/>
     <!--<ScrollPane fx:id="sp" VBox.vgrow="ALWAYS">-->
         <TextArea fx:id="msg" editable="false" VBox.vgrow="ALWAYS"/>
     <!--</ScrollPane>-->
-    <HBox fx:id="bottomPanel">
+    <HBox fx:id="bottomPanel" managed="false" visible="false">
         <TextField fx:id="textField" HBox.hgrow="ALWAYS" promptText="Введите сообщение ..." onAction="#sendMessage"/>
-        <Button fx:id="button" text="ОТПРАВИТЬ" onAction="#sendMessage"/>
+        <Button fx:id="button" text="Send" onAction="#sendMessage"/>
     </HBox>
 </VBox>

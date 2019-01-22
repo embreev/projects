@@ -68,10 +68,20 @@ public class Controller {
                     try {
                         while (true) {
                             String str = in.readUTF();
-                            if (str.equalsIgnoreCase("closeChat")) break;
-                            msg.appendText(str + "\n");
-                            System.out.println(str);
+                            if(str.startsWith("/authok")) {
+                                setAuthorized(true);
+                                break;
+                            } else {
+                                msg.appendText(str + "\n");
+                            }
                         }
+
+                        while (true) {
+                            String str = in.readUTF();
+                            if(str.equals("/serverClosed")) break;
+                            msg.appendText(str + "\n");
+                        }
+
                     } catch (IOException e) {
                         e.printStackTrace();
                     } finally {
@@ -80,6 +90,7 @@ public class Controller {
                         } catch (IOException e) {
                             e.printStackTrace();
                         }
+                        setAuthorized(false);
                     }
                 }
             }).start();
