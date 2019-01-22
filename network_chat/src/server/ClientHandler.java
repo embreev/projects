@@ -13,6 +13,11 @@ public class ClientHandler {
     private DataOutputStream out;
     private Server server;
     private String nickName;
+    private String tmpNick;
+
+    public String getNickName() {
+        return nickName;
+    }
 
     public ClientHandler(Server server, Socket socket) {
         try {
@@ -25,28 +30,33 @@ public class ClientHandler {
                 @Override
                 public void run() {
                     try {
-                        sendMessage("Connect to server successfully!");
                         while (true) {
                             String str = in.readUTF();
 
                             if (str.startsWith("/auth")) {
                                 String[] tokens = str.split(" ");
-                                String newNick = AuthService.getNickLoginAndPass(tokens[1], tokens[2]);
-                                if (newNick != null) {
-                                    sendMessage("/authok");
-                                    nickName = newNick;
-                                    server.subscribe(ClientHandler.this);
-                                    break;
+                                tmpNick = AuthService.getNickLoginAndPass(tokens[1], tokens[2]);
+
+                                if (!server.checkAuth(tmpNick)) {
+                                    if (tmpNick != null) {
+                                        nickName = tmpNick;
+                                        sendMessage("/authok " + nickName);
+                                        server.subscribe(ClientHandler.this);
+                                        break;
+                                    } else {
+                                        sendMessage("Неверный логин/пароль!");
+                                    }
                                 } else {
-                                    sendMessage("Неверный логин/пароль!");
+                                    sendMessage("Пользователь уже авторизовался, попробуйте другой логин");
                                 }
                             }
                         }
 
                         while (true) {
                             String str = in.readUTF();
-                            if(str.equals("/end")) {
+                            if(str.trim().endsWith("/end")) {
                                 out.writeUTF("/serverClosed");
+                                server.unsubscribe(ClientHandler.this);
                                 break;
                             }
                             server.broadcastMsg(str);

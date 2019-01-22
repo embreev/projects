@@ -40,6 +40,7 @@ public class Controller {
     private DataInputStream in;
     private DataOutputStream out;
     private boolean isAuthorized;
+    private String nickName;
 
     public void setAuthorized(boolean isAuthorized) {
         this.isAuthorized = isAuthorized;
@@ -70,6 +71,8 @@ public class Controller {
                             String str = in.readUTF();
                             if(str.startsWith("/authok")) {
                                 setAuthorized(true);
+                                nickName = str.split(" ")[1]; //костыль, но работает )
+                                msg.appendText("Пользователь " + nickName + " успешно авторизовался!" + "\n");
                                 break;
                             } else {
                                 msg.appendText(str + "\n");
@@ -101,9 +104,10 @@ public class Controller {
     }
 
     public void sendMessage() {
-        if (!textField.getText().trim().isEmpty()) {
+        String msg = textField.getText();
+        if (!msg.trim().isEmpty()) {
             try {
-                out.writeUTF(textField.getText());
+                out.writeUTF(nickName + ": " + msg);
                 textField.clear();
                 textField.requestFocus();
             } catch (IOException e) {

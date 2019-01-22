@@ -3,10 +3,12 @@ package server;
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.util.ArrayList;
 import java.util.Vector;
 
 public class Server {
     private Vector<ClientHandler> clients;
+    public ArrayList<String> nickArray = new ArrayList<>();
 
     public Server() {
         clients = new Vector<>();
@@ -16,11 +18,11 @@ public class Server {
         try {
             AuthService.connect();
             server = new ServerSocket(8189);
-            System.out.println("Server is running!");
+            System.out.println("Сервер запущен!");
 
             while (true) {
                 socket = server.accept();
-                System.out.println("Client connected!");
+                System.out.println("Клиент подключился!");
                 new ClientHandler(this, socket);
             }
         } catch (IOException e) {
@@ -37,10 +39,16 @@ public class Server {
 
     public void subscribe(ClientHandler client) {
         clients.add(client);
+        nickArray.add(client.getNickName());
     }
 
     public void unsubscribe(ClientHandler client) {
         clients.remove(client);
+        nickArray.remove(client.getNickName());
+    }
+
+    public boolean checkAuth(String nickName) {
+        return nickArray.contains(nickName);
     }
 
     public void broadcastMsg(String msg) {

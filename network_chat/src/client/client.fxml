@@ -14,13 +14,14 @@
 <VBox fx:id="vbox" fx:controller="client.Controller" xmlns:fx="http://javafx.com/fxml" alignment="center">
     <stylesheets><URL value="@/css/style.css"/></stylesheets>
 
+    <Text fx:id="text" text="Network Chat"/>
+
     <HBox fx:id="upperPanel">
         <TextField HBox.hgrow="ALWAYS" promptText="Login" fx:id="loginField"/>
         <PasswordField promptText="Password" fx:id="passwordField" onAction="#tryToAuth"/>
         <Button text="Sign in" onAction="#tryToAuth"/>
     </HBox>
 
-    <Text fx:id="text" text="Network Chat"/>
     <!--<ScrollPane fx:id="sp" VBox.vgrow="ALWAYS">-->
         <TextArea fx:id="msg" editable="false" VBox.vgrow="ALWAYS"/>
     <!--</ScrollPane>-->
