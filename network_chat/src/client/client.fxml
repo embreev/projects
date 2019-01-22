@@ -10,13 +10,21 @@
 
 <?import javafx.scene.text.Text?>
 <?import javafx.scene.control.TextArea?>
+<?import javafx.scene.control.PasswordField?>
 <VBox fx:id="vbox" fx:controller="client.Controller" xmlns:fx="http://javafx.com/fxml" alignment="center">
     <stylesheets><URL value="@/css/style.css"/></stylesheets>
+
+    <HBox fx:id="upperPanel">
+        <TextField HBox.hgrow="ALWAYS" promptText="Логин" fx:id="loginField"/>
+        <PasswordField promptText="Пароль" fx:id="passwordField" onAction="#tryToAuth"/>
+        <Button text="Авторизоваться" onAction="#tryToAuth"/>
+    </HBox>
+
     <Text fx:id="text" text="СЕТЕВОЙ ЧАТ"/>
     <!--<ScrollPane fx:id="sp" VBox.vgrow="ALWAYS">-->
         <TextArea fx:id="msg" editable="false" VBox.vgrow="ALWAYS"/>
     <!--</ScrollPane>-->
-    <HBox fx:id="hbox">
+    <HBox fx:id="bottomPanel">
         <TextField fx:id="textField" HBox.hgrow="ALWAYS" promptText="Введите сообщение ..." onAction="#sendMessage"/>
         <Button fx:id="button" text="ОТПРАВИТЬ" onAction="#sendMessage"/>
     </HBox>

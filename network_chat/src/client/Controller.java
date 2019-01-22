@@ -1,21 +1,13 @@
 package client;
 
 import javafx.fxml.FXML;
-import javafx.fxml.Initializable;
-import javafx.geometry.NodeOrientation;
 import javafx.scene.control.*;
-import javafx.scene.layout.VBox;
+import javafx.scene.layout.HBox;
 
 import java.io.*;
 import java.net.Socket;
-import java.net.URL;
-import java.util.Date;
-import java.util.ResourceBundle;
 
-public class Controller implements Initializable {
-    private Date date;
-    private Label label;
-
+public class Controller {
     @FXML
     TextArea msg;
 
@@ -28,14 +20,43 @@ public class Controller implements Initializable {
     @FXML
     ScrollPane sp;
 
+    @FXML
+    HBox bottomPanel;
+
+    @FXML
+    HBox upperPanel;
+
+    @FXML
+    TextField loginField;
+
+    @FXML
+    PasswordField passwordField;
+
+//    private Date date;
+//    private Label label;
     private final String SERVER_ADDR = "localhost";
     private final int SERVER_PORT = 8189;
     private Socket socket;
     private DataInputStream in;
     private DataOutputStream out;
+    private boolean isAuthorized;
 
-    @Override
-    public void initialize(URL location, ResourceBundle resources) {
+    public void setAuthorized(boolean isAuthorized) {
+        this.isAuthorized = isAuthorized;
+        if(!isAuthorized) {
+            upperPanel.setVisible(true);
+            upperPanel.setManaged(true);
+            bottomPanel.setVisible(false);
+            bottomPanel.setManaged(false);
+        } else {
+            upperPanel.setVisible(false);
+            upperPanel.setManaged(false);
+            bottomPanel.setVisible(true);
+            bottomPanel.setManaged(true);
+        }
+    }
+
+    public void connect() {
         try {
             socket = new Socket(SERVER_ADDR, SERVER_PORT);
             in = new DataInputStream(socket.getInputStream());
@@ -67,6 +88,7 @@ public class Controller implements Initializable {
             e.printStackTrace();
         }
     }
+
     public void sendMessage() {
         if (!textField.getText().trim().isEmpty()) {
             try {
@@ -76,6 +98,19 @@ public class Controller implements Initializable {
             } catch (IOException e) {
                 e.printStackTrace();
             }
+        }
+    }
+
+    public void tryToAuth() {
+        if(socket == null || socket.isClosed()) {
+            connect();
+        }
+        try {
+            out.writeUTF("/auth " + loginField.getText() + " " + passwordField.getText());
+            loginField.clear();
+            passwordField.clear();
+        } catch (IOException e) {
+            e.printStackTrace();
         }
     }
 }

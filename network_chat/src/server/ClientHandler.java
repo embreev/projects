@@ -1,16 +1,18 @@
 package server;
 
+import java.net.Socket;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
-import java.net.Socket;
+
 
 public class ClientHandler {
 
-    Socket socket = null;
-    DataInputStream in;
-    DataOutputStream out;
-    Server server;
+    private Socket socket = null;
+    private DataInputStream in;
+    private DataOutputStream out;
+    private Server server;
+    private String nickName;
 
     public ClientHandler(Server server, Socket socket) {
         try {
@@ -24,16 +26,41 @@ public class ClientHandler {
                 public void run() {
                     try {
                         sendMessage("Connect to server successfully!");
-                        while (true){
+                        while (true) {
                             String str = in.readUTF();
-                            if (str.equals("/end")) {
+
+                            if (str.startsWith("/auth")) {
+                                String[] tokens = str.split(" ");
+                                String newNick = AuthService.getNickLoginAndPass(tokens[1], tokens[2]);
+                                if (newNick != null) {
+                                    sendMessage("/authok");
+                                    nickName = newNick;
+                                    server.subscribe(ClientHandler.this);
+                                    break;
+                                } else {
+                                    sendMessage("Неверный логин/пароль!");
+                                }
+                            }
+                        }
+
+                        while (true) {
+                            String str = in.readUTF();
+                            if(str.equals("/end")) {
                                 out.writeUTF("/serverClosed");
                                 break;
                             }
-                            sendMessage(str);
+                            server.broadcastMsg(str);
                         }
                     } catch (IOException e) {
                         e.printStackTrace();
+                    } finally {
+                        try {
+                            in.close();
+                            out.close();
+                            socket.close();
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
                     }
                 }
             }).start();
