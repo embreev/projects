@@ -37,7 +37,7 @@ public class ClientHandler {
                                 String[] tokens = str.split(" ");
                                 tmpNick = AuthService.getNickLoginAndPass(tokens[1], tokens[2]);
 
-                                if (!server.checkAuth(tmpNick)) {
+                                if (!server.checkAuthDuplicate(tmpNick)) {
                                     if (tmpNick != null) {
                                         nickName = tmpNick;
                                         sendMessage("/authok " + nickName);
@@ -54,12 +54,18 @@ public class ClientHandler {
 
                         while (true) {
                             String str = in.readUTF();
-                            if(str.trim().endsWith("/end")) {
+                            String[] tmpStr = str.split(" ");
+                            if(tmpStr[1].equals("/end")) {
                                 out.writeUTF("/serverClosed");
                                 server.unsubscribe(ClientHandler.this);
                                 break;
                             }
-                            server.broadcastMsg(str);
+                            if (tmpStr[1].equals("/w")) {
+                                String msg = str.substring(str.indexOf("/") + 4 + tmpStr[2].toCharArray().length);
+                                server.sendPrivateMsg(nickName, tmpStr[2], msg);
+                            } else {
+                                server.sendBroadcastMsg(str);
+                            }
                         }
                     } catch (IOException e) {
                         e.printStackTrace();

@@ -47,13 +47,21 @@ public class Server {
         nickArray.remove(client.getNickName());
     }
 
-    public boolean checkAuth(String nickName) {
+    public boolean checkAuthDuplicate(String nickName) {
         return nickArray.contains(nickName);
     }
 
-    public void broadcastMsg(String msg) {
-        for (ClientHandler o: clients) {
-            o.sendMessage(msg);
+    public void sendBroadcastMsg(String msg) {
+        for (ClientHandler ch: clients) {
+            ch.sendMessage(msg);
+        }
+    }
+
+    public void sendPrivateMsg(String myName, String nickName, String msg) {
+        for (ClientHandler ch: clients) {
+            if (ch.getNickName().equalsIgnoreCase(nickName)) {
+                ch.sendMessage(myName + ": " + msg);
+            }
         }
     }
 }
