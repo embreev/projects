@@ -32,8 +32,6 @@ public class Controller {
     @FXML
     PasswordField passwordField;
 
-//    private Date date;
-//    private Label label;
     private final String SERVER_ADDR = "localhost";
     private final int SERVER_PORT = 8189;
     private Socket socket;
