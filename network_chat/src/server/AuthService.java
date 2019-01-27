@@ -2,19 +2,7 @@ package server;
 
 import java.sql.*;
 
-public class AuthService {
-    private static Connection connection;
-    private static Statement stmt;
-
-    public static void connect() {
-        try {
-            Class.forName("org.sqlite.JDBC");
-            connection = DriverManager.getConnection("jdbc:sqlite:main.db");
-            stmt = connection.createStatement();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
+public class AuthService extends ConnectDB{
 
     public static String getNickByLoginAndPass(String login, String pass) {
         String sql = String.format("SELECT nickname FROM users\n" +

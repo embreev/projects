@@ -61,7 +61,7 @@ class Server {
 
     void sendBroadcastMsg(ClientHandler clientHandler, String msg) {
         for (ClientHandler ch: clients) {
-            if (checkBlackList(ch, clientHandler.getNickName())) {
+            if (!checkBlackList(ch, clientHandler.getNickName())) {
                 ch.sendMessage(msg);
             }
         }
