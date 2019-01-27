@@ -41,14 +41,6 @@ public class BlackListService extends ConnectDB{
         }
     }
 
-    static void disconnect() {
-        try {
-            connection.close();
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-    }
-
 
 //    public static void main(String[] args) {
 //        connect();

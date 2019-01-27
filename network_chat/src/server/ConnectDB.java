@@ -2,6 +2,7 @@ package server;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
+import java.sql.SQLException;
 import java.sql.Statement;
 
 public class ConnectDB {
@@ -14,6 +15,14 @@ public class ConnectDB {
             connection = DriverManager.getConnection("jdbc:sqlite:main.db");
             stmt = connection.createStatement();
         } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    static void disconnect() {
+        try {
+            connection.close();
+        } catch (SQLException e) {
             e.printStackTrace();
         }
     }

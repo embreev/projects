@@ -18,12 +18,4 @@ public class AuthService extends ConnectDB{
         }
         return null;
     }
-
-    public static void disconnect() {
-        try {
-            connection.close();
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-    }
 }
