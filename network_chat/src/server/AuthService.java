@@ -16,7 +16,7 @@ public class AuthService {
         }
     }
 
-    public static String getNickLoginAndPass(String login, String pass) {
+    public static String getNickByLoginAndPass(String login, String pass) {
         String sql = String.format("SELECT nickname FROM users\n" +
                 "WHERE login = '%s'\n" +
                 "AND password = '%s'", login, pass);

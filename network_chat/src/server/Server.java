@@ -3,14 +3,12 @@ package server;
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
-import java.util.ArrayList;
 import java.util.Vector;
 
-public class Server {
+class Server {
     private Vector<ClientHandler> clients;
-    public ArrayList<String> nickArray = new ArrayList<>();
 
-    public Server() {
+    Server() {
         clients = new Vector<>();
         ServerSocket server = null;
         Socket socket = null;
@@ -37,31 +35,44 @@ public class Server {
         }
     }
 
-    public void subscribe(ClientHandler client) {
+    void subscribe(ClientHandler client) {
         clients.add(client);
-        nickArray.add(client.getNickName());
     }
 
-    public void unsubscribe(ClientHandler client) {
+    void unsubscribe(ClientHandler client) {
         clients.remove(client);
-        nickArray.remove(client.getNickName());
     }
 
-    public boolean checkAuthDuplicate(String nickName) {
-        return nickArray.contains(nickName);
-    }
-
-    public void sendBroadcastMsg(String msg) {
+    boolean checkAuthDuplicate(String nickName) {
         for (ClientHandler ch: clients) {
-            ch.sendMessage(msg);
+            if (ch.getNickName().equalsIgnoreCase(nickName)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    boolean checkBlackList(ClientHandler ch, String nickName) {
+        return BlackListService.checkUserOnBlackList(ch, nickName) == null ?  false : true;
+    }
+
+    void sendBroadcastMsg(ClientHandler clientHandler, String msg) {
+        for (ClientHandler ch: clients) {
+            if (checkBlackList(ch, clientHandler.getNickName())) {
+                ch.sendMessage(msg);
+            }
         }
     }
 
-    public void sendPrivateMsg(String myName, String nickName, String msg) {
+    void sendPrivateMsg(ClientHandler clientHandler, String nickName, String msg) {
+        String myName = clientHandler.getNickName();
         for (ClientHandler ch: clients) {
             if (ch.getNickName().equalsIgnoreCase(nickName)) {
                 ch.sendMessage(myName + ": " + msg);
+                clientHandler.sendMessage(myName + ": " + msg);
+                return;
             }
         }
+        clientHandler.sendMessage("Клиент с ником: " + nickName + " не найден!");
     }
 }

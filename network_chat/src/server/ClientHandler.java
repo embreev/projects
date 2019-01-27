@@ -4,6 +4,7 @@ import java.net.Socket;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
+import java.util.Date;
 
 
 public class ClientHandler {
@@ -14,6 +15,10 @@ public class ClientHandler {
     private Server server;
     private String nickName;
     private String tmpNick;
+    private long startTime;
+    private long currentTime;
+    private long timeStamp;
+    private boolean timeout;
 
     public String getNickName() {
         return nickName;
@@ -25,17 +30,24 @@ public class ClientHandler {
             this.socket = socket;
             this.in = new DataInputStream(socket.getInputStream());
             this.out = new DataOutputStream(socket.getOutputStream());
+            startTime = new Date().getTime();
 
             new Thread(new Runnable() {
                 @Override
                 public void run() {
                     try {
                         while (true) {
+//                            currentTime = new Date().getTime();
+//                            timeStamp = currentTime - startTime;
+//                            sendMessage(String.valueOf(timeStamp));
+//                            if (timeStamp > 5000) {
+//                                timeout = true;
+//                                break;
+//                            }
                             String str = in.readUTF();
-
                             if (str.startsWith("/auth")) {
                                 String[] tokens = str.split(" ");
-                                tmpNick = AuthService.getNickLoginAndPass(tokens[1], tokens[2]);
+                                tmpNick = AuthService.getNickByLoginAndPass(tokens[1], tokens[2]);
 
                                 if (!server.checkAuthDuplicate(tmpNick)) {
                                     if (tmpNick != null) {
@@ -53,18 +65,33 @@ public class ClientHandler {
                         }
 
                         while (true) {
+//                            if (timeout) {
+//                                out.writeUTF("/serverClosed");
+//                                server.unsubscribe(ClientHandler.this);
+//                                break;
+//                            }
                             String str = in.readUTF();
                             String[] tmpStr = str.split(" ");
-                            if(tmpStr[1].equals("/end")) {
-                                out.writeUTF("/serverClosed");
-                                server.unsubscribe(ClientHandler.this);
-                                break;
-                            }
-                            if (tmpStr[1].equals("/w")) {
-                                String msg = str.substring(str.indexOf("/") + 4 + tmpStr[2].toCharArray().length);
-                                server.sendPrivateMsg(nickName, tmpStr[2], msg);
+                            if (tmpStr[1].startsWith("/")) {
+                                if(tmpStr[1].equals("/end")) {
+                                    out.writeUTF("/serverClosed");
+                                    server.unsubscribe(ClientHandler.this);
+                                    break;
+                                }
+                                if (tmpStr[1].equals("/w")) {
+                                    String msg = str.substring(str.indexOf("/") + 4 + tmpStr[2].toCharArray().length);
+                                    server.sendPrivateMsg(ClientHandler.this, tmpStr[2], msg);
+                                }
+                                if (tmpStr[1].equals("/abl")) {
+                                    BlackListService.addUserOnBlackList(ClientHandler.this, tmpStr[2]);
+                                    sendMessage(tmpStr[2] + " добавлен в ваш блэклист!");
+                                }
+                                if (tmpStr[1].equals("/rbl")) {
+                                    BlackListService.removeUserFromBlackList(ClientHandler.this, tmpStr[2]);
+                                    sendMessage(tmpStr[2] + " удален из ваш блэклист!");
+                                }
                             } else {
-                                server.sendBroadcastMsg(str);
+                                server.sendBroadcastMsg(ClientHandler.this, str);
                             }
                         }
                     } catch (IOException e) {
