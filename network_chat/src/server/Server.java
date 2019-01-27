@@ -15,6 +15,7 @@ class Server {
 
         try {
             AuthService.connect();
+            BlackListService.connect();
             server = new ServerSocket(8189);
             System.out.println("Сервер запущен!");
 
@@ -29,6 +30,8 @@ class Server {
             try {
                 socket.close();
                 server.close();
+                AuthService.disconnect();
+                BlackListService.disconnect();
             } catch (IOException e) {
                 e.printStackTrace();
             }

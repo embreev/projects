@@ -16,27 +16,12 @@ public class BlackListService {
         }
     }
 
-    static String getMyID(String nickName) {
-        String sql = String.format("SELECT id FROM users WHERE nickname = '%s'", nickName);
-        try {
-            ResultSet rs = stmt.executeQuery(sql);
-            if(rs.next()) {
-                return rs.getString(1);
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-        return null;
-    }
-
     static String checkUserOnBlackList(ClientHandler ch, String nickName) {
-        String id = getMyID(ch.getNickName());
         String sql = String.format("SELECT id FROM blacklist \n" +
-                "WHERE id_user = '%s' \n" +
-                "AND nickname = '%s'", id, nickName);
+                "WHERE nickname = '%s' \n" +
+                "AND block_nickname = '%s'", ch.getNickName(), nickName);
         try {
             ResultSet rs = stmt.executeQuery(sql);
-
             if(rs.next()) {
                 return rs.getString(1);
             }
@@ -47,20 +32,18 @@ public class BlackListService {
     }
 
     static void addUserOnBlackList(ClientHandler ch, String nickName) {
-        String id = getMyID(ch.getNickName());
-        if (id != null) {
-            String sql = String.format("INSERT INTO blacklist (id_user, nickname) VALUES ('%s', '%s')", id, nickName);
-            try {
-                stmt.executeUpdate(sql);
-            } catch (SQLException e) {
-                e.printStackTrace();
-            }
+        String sql = String.format("INSERT INTO blacklist (nickname, block_nickname) \n" +
+                "VALUES ('%s', '%s')", ch.getNickName(), nickName);
+        try {
+            stmt.executeUpdate(sql);
+        } catch (SQLException e) {
+            e.printStackTrace();
         }
     }
 
     static void removeUserFromBlackList(ClientHandler ch, String nickName) {
-        String id = getMyID(ch.getNickName());
-        String sql = String.format("DELETE FROM blacklist WHERE id_user = '%s' AND nickname = '%s'", id, nickName);
+        String sql = String.format("DELETE FROM blacklist WHERE nickname = '%s' \n" +
+                "AND block_nickname = '%s'", ch.getNickName(), nickName);
         try {
             stmt.executeUpdate(sql);
         } catch (SQLException e) {

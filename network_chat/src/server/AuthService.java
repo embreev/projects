@@ -22,7 +22,6 @@ public class AuthService {
                 "AND password = '%s'", login, pass);
         try {
             ResultSet rs = stmt.executeQuery(sql);
-
             if(rs.next()) {
                 return rs.getString(1);
             }

@@ -88,10 +88,10 @@ public class ClientHandler {
                                 }
                                 if (tmpStr[1].equals("/rbl")) {
                                     BlackListService.removeUserFromBlackList(ClientHandler.this, tmpStr[2]);
-                                    sendMessage(tmpStr[2] + " удален из ваш блэклист!");
+                                    sendMessage(tmpStr[2] + " удален из вашего блэклиста!");
                                 }
                             } else {
-                                server.sendBroadcastMsg(ClientHandler.this, str);
+                                server.sendBroadcastMsg(ClientHandler.this, tmpStr[1]);
                             }
                         }
                     } catch (IOException e) {
