@@ -1,9 +1,9 @@
 package server;
 
-import java.net.Socket;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
+import java.net.Socket;
 import java.util.Date;
 
 
@@ -45,10 +45,16 @@ public class ClientHandler {
 //                                break;
 //                            }
                             String str = in.readUTF();
+                            String[] tokens = str.split(" ");
+                            if (str.startsWith("/reg")) {
+                                String login = tokens[1];
+                                String pass = tokens[2];
+                                String nickName = tokens[3];
+                                AuthService.addUser(login, pass, nickName);
+                                sendMessage("/regok " + login + " " + nickName);
+                            }
                             if (str.startsWith("/auth")) {
-                                String[] tokens = str.split(" ");
                                 tmpNick = AuthService.getNickByLoginAndPass(tokens[1], tokens[2]);
-
                                 if (!server.checkAuthDuplicate(tmpNick)) {
                                     if (tmpNick != null) {
                                         nickName = tmpNick;
@@ -73,7 +79,7 @@ public class ClientHandler {
                             String str = in.readUTF();
                             String[] tmpStr = str.split(" ");
                             if (tmpStr[1].startsWith("/")) {
-                                if(tmpStr[1].equals("/end")) {
+                                if (tmpStr[1].equals("/end")) {
                                     out.writeUTF("/serverClosed");
                                     server.unsubscribe(ClientHandler.this);
                                     break;

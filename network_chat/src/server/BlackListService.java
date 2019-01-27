@@ -40,13 +40,4 @@ public class BlackListService extends ConnectDB{
             e.printStackTrace();
         }
     }
-
-
-//    public static void main(String[] args) {
-//        connect();
-//        System.out.println(getMyID("nick1"));
-////        addUserOnBlackList(getMyID("nick1"), "nick2");
-//        System.out.println(checkUserOnBlackList(getMyID("nick1"), "nick3"));
-//        disconnect();
-//    }
 }

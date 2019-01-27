@@ -47,7 +47,7 @@ class Server {
     }
 
     boolean checkAuthDuplicate(String nickName) {
-        for (ClientHandler ch: clients) {
+        for (ClientHandler ch : clients) {
             if (ch.getNickName().equalsIgnoreCase(nickName)) {
                 return true;
             }
@@ -56,11 +56,11 @@ class Server {
     }
 
     boolean checkBlackList(ClientHandler ch, String nickName) {
-        return BlackListService.checkUserOnBlackList(ch, nickName) == null ?  false : true;
+        return BlackListService.checkUserOnBlackList(ch, nickName) == null ? false : true;
     }
 
     void sendBroadcastMsg(ClientHandler clientHandler, String msg) {
-        for (ClientHandler ch: clients) {
+        for (ClientHandler ch : clients) {
             if (!checkBlackList(ch, clientHandler.getNickName())) {
                 ch.sendMessage(msg);
             }
@@ -69,7 +69,7 @@ class Server {
 
     void sendPrivateMsg(ClientHandler clientHandler, String nickName, String msg) {
         String myName = clientHandler.getNickName();
-        for (ClientHandler ch: clients) {
+        for (ClientHandler ch : clients) {
             if (ch.getNickName().equalsIgnoreCase(nickName)) {
                 ch.sendMessage(myName + ": " + msg);
                 clientHandler.sendMessage(myName + ": " + msg);
