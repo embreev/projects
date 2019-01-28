@@ -18,56 +18,64 @@ public class ClientHandler {
     private long startTime;
     private long currentTime;
     private long timeStamp;
-    private boolean timeout;
+    private boolean timeout = false;
 
     public String getNickName() {
         return nickName;
     }
 
     public ClientHandler(Server server, Socket socket) {
+        startTime = new Date().getTime();
         try {
             this.server = server;
             this.socket = socket;
             this.in = new DataInputStream(socket.getInputStream());
             this.out = new DataOutputStream(socket.getOutputStream());
-            startTime = new Date().getTime();
 
-            new Thread(new Runnable() {
+//            while (true) {
+//                currentTime = new Date().getTime();
+//                timeStamp = currentTime - startTime;
+//                System.out.println(timeStamp);
+//                if (timeStamp > 5000) {
+//                    timeout = true;
+//                    break;
+//                }
+//            }
+
+            Thread thread = new Thread(new Runnable() {
                 @Override
                 public void run() {
                     try {
                         while (true) {
-                            currentTime = new Date().getTime();
-                            timeStamp = currentTime - startTime;
-//                            sendMessage(String.valueOf(timeStamp));
-                            if (timeStamp > 5000) {
-                                timeout = true;
-                                break;
-                            }
-                            String str = in.readUTF();
-                            String[] tokens = str.split(" ");
-                            if (str.startsWith("/reg")) {
-                                String login = tokens[1];
-                                String pass = tokens[2];
-                                String nickName = tokens[3];
-                                AuthService.addUser(login, pass, nickName);
-                                sendMessage("/regok " + login + " " + nickName);
-                            }
-                            if (str.startsWith("/auth")) {
-                                tmpNick = AuthService.getNickByLoginAndPass(tokens[1], tokens[2]);
-                                if (!server.checkAuthDuplicate(tmpNick)) {
-                                    if (tmpNick != null) {
-                                        nickName = tmpNick;
-                                        sendMessage("/authok " + nickName);
-                                        server.subscribe(ClientHandler.this);
-                                        break;
-                                    } else {
-                                        sendMessage("Неверный логин/пароль!");
-                                    }
-                                } else {
-                                    sendMessage("Пользователь уже авторизовался, \n" +
-                                            "попробуйте другой логин");
+                            if (!timeout) {
+                                String str = in.readUTF();
+                                String[] tokens = str.split(" ");
+                                if (str.startsWith("/reg")) {
+                                    String login = tokens[1];
+                                    String pass = tokens[2];
+                                    String nickName = tokens[3];
+                                    AuthService.addUser(login, pass, nickName);
+                                    sendMessage("/regok " + login + " " + nickName);
                                 }
+                                if (str.startsWith("/auth")) {
+                                    tmpNick = AuthService.getNickByLoginAndPass(tokens[1], tokens[2]);
+                                    if (!server.checkAuthDuplicate(tmpNick)) {
+                                        if (tmpNick != null) {
+                                            nickName = tmpNick;
+                                            sendMessage("/authok " + nickName);
+                                            server.subscribe(ClientHandler.this);
+                                            break;
+                                        } else {
+                                            sendMessage("Неверный логин/пароль! \n");
+                                        }
+                                    } else {
+                                        sendMessage("Пользователь уже авторизовался, \n" +
+                                                "попробуйте другой логин");
+                                    }
+                                }
+                            } else {
+                                sendMessage("Время авторизации истекло! \n");
+                                break;
                             }
                         }
 
@@ -113,7 +121,10 @@ public class ClientHandler {
                         }
                     }
                 }
-            }).start();
+            });
+            thread.setDaemon(true);
+            thread.start();
+
         } catch (IOException e) {
             e.printStackTrace();
         }

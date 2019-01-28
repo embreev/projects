@@ -58,6 +58,12 @@ public class Controller {
     private boolean isAuthorized;
     private String nickName;
 
+    public Controller() throws IOException {
+        if (socket == null || socket.isClosed()) {
+            connect();
+        }
+    }
+
     public void setAuthorized(boolean isAuthorized) {
         this.isAuthorized = isAuthorized;
         if (!isAuthorized) {
@@ -100,7 +106,8 @@ public class Controller {
                             }
                             if (str.startsWith("/authok")) {
                                 setAuthorized(true);
-                                msg.appendText("Пользователь " + token[1] + " успешно авторизовался!" + "\n");
+                                msg.appendText("Пользователь " + token[1] + "\n" +
+                                        "успешно авторизовался!" + "\n");
                                 break;
                             } else {
                                 msg.appendText(str + "\n");
@@ -171,7 +178,7 @@ public class Controller {
                 aLoginField.clear();
                 aPasswordField.clear();
             } else {
-                out.writeUTF("Заполните все поля!");
+                msg.appendText("Заполните все поля! \n");
             }
         } catch (IOException e) {
             e.printStackTrace();
@@ -191,7 +198,7 @@ public class Controller {
                 rPasswordField.clear();
                 rNickNameField.clear();
             } else {
-                out.writeUTF("Заполните все поля!");
+                msg.appendText("Заполните все поля! \n");
             }
         } catch (IOException e) {
             e.printStackTrace();

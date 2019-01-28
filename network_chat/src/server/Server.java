@@ -78,7 +78,8 @@ class Server {
                 return;
             }
         }
-        clientHandler.sendMessage("Клиент с ником: " + nickName + " не найден!");
+        clientHandler.sendMessage("Клиент с ником: " + nickName + "\n" +
+                "не найден!");
     }
 
     public void broadcastClientList() {

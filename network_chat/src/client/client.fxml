@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <?scenebuilder-stylesheet "../css/style.css"?>
-<!--<?import javafx.scene.control.ScrollPane?>-->
 
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
