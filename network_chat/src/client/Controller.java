@@ -1,5 +1,6 @@
 package client;
 
+import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.scene.layout.HBox;
@@ -46,6 +47,9 @@ public class Controller {
     @FXML
     TextField rNickNameField;
 
+    @FXML
+    ListView<String> clientList;
+
     private final String SERVER_ADDR = "localhost";
     private final int SERVER_PORT = 8189;
     private Socket socket;
@@ -63,6 +67,8 @@ public class Controller {
             regPanel.setManaged(true);
             mainPanel.setVisible(false);
             mainPanel.setManaged(false);
+            clientList.setVisible(false);
+            clientList.setManaged(false);
         } else {
             authPanel.setVisible(false);
             authPanel.setManaged(false);
@@ -70,6 +76,8 @@ public class Controller {
             regPanel.setManaged(false);
             mainPanel.setVisible(true);
             mainPanel.setManaged(true);
+            clientList.setVisible(true);
+            clientList.setManaged(true);
         }
     }
 
@@ -101,8 +109,24 @@ public class Controller {
 
                         while (true) {
                             String str = in.readUTF();
-                            if (str.equals("/serverClosed")) break;
-                            msg.appendText(str + "\n");
+                            if(str.startsWith("/")) {
+                                if (str.equals("/serverClosed")) break;
+                                if(str.startsWith("/clientlist")) {
+                                    String[] tokens = str.split(" ");
+
+                                    Platform.runLater(new Runnable() {
+                                        @Override
+                                        public void run() {
+                                            clientList.getItems().clear();
+                                            for (int i = 1; i < tokens.length; i++) {
+                                                clientList.getItems().add(tokens[i]);
+                                            }
+                                        }
+                                    });
+                                }
+                            } else {
+                                msg.appendText(str + "\n");
+                            }
                         }
 
                     } catch (IOException e) {
@@ -119,6 +143,7 @@ public class Controller {
             }).start();
 
         } catch (IOException e) {
+            msg.appendText("Не удалось подключиться к серверу!!!");
             e.printStackTrace();
         }
     }

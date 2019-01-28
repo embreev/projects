@@ -40,10 +40,12 @@ class Server {
 
     void subscribe(ClientHandler client) {
         clients.add(client);
+        broadcastClientList();
     }
 
     void unsubscribe(ClientHandler client) {
         clients.remove(client);
+        broadcastClientList();
     }
 
     boolean checkAuthDuplicate(String nickName) {
@@ -77,5 +79,17 @@ class Server {
             }
         }
         clientHandler.sendMessage("Клиент с ником: " + nickName + " не найден!");
+    }
+
+    public void broadcastClientList() {
+        StringBuilder sb = new StringBuilder();
+        sb.append("/clientlist ");
+        for (ClientHandler o : clients) {
+            sb.append(o.getNickName() + " ");
+        }
+        String out = sb.toString();
+        for (ClientHandler o : clients) {
+            o.sendMessage(out);
+        }
     }
 }

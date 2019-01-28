@@ -37,13 +37,13 @@ public class ClientHandler {
                 public void run() {
                     try {
                         while (true) {
-//                            currentTime = new Date().getTime();
-//                            timeStamp = currentTime - startTime;
+                            currentTime = new Date().getTime();
+                            timeStamp = currentTime - startTime;
 //                            sendMessage(String.valueOf(timeStamp));
-//                            if (timeStamp > 5000) {
-//                                timeout = true;
-//                                break;
-//                            }
+                            if (timeStamp > 5000) {
+                                timeout = true;
+                                break;
+                            }
                             String str = in.readUTF();
                             String[] tokens = str.split(" ");
                             if (str.startsWith("/reg")) {
@@ -65,17 +65,18 @@ public class ClientHandler {
                                         sendMessage("Неверный логин/пароль!");
                                     }
                                 } else {
-                                    sendMessage("Пользователь уже авторизовался, попробуйте другой логин");
+                                    sendMessage("Пользователь уже авторизовался, \n" +
+                                            "попробуйте другой логин");
                                 }
                             }
                         }
 
                         while (true) {
-//                            if (timeout) {
-//                                out.writeUTF("/serverClosed");
-//                                server.unsubscribe(ClientHandler.this);
-//                                break;
-//                            }
+                            if (timeout) {
+                                out.writeUTF("/serverClosed");
+                                server.unsubscribe(ClientHandler.this);
+                                break;
+                            }
                             String str = in.readUTF();
                             String[] tmpStr = str.split(" ");
                             if (tmpStr[1].startsWith("/")) {

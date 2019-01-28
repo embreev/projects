@@ -27,11 +27,15 @@
         <Button HBox.hgrow="ALWAYS" minWidth="70" text="Register" onAction="#reg"/>
     </HBox>
 
-    <!--<ScrollPane fx:id="sp" VBox.vgrow="ALWAYS">-->
-    <TextArea fx:id="msg" editable="false" VBox.vgrow="ALWAYS"/>
-    <!--</ScrollPane>-->
+    <HBox VBox.vgrow="ALWAYS">
+        <VBox HBox.hgrow="ALWAYS">
+            <TextArea fx:id="msg" editable="false" VBox.vgrow="ALWAYS"/>
+        </VBox>
+        <ListView fx:id="clientList" managed="false" visible="false" minWidth="70"></ListView>
+    </HBox>
+
     <HBox fx:id="mainPanel" managed="false" visible="false">
         <TextField fx:id="textField" HBox.hgrow="ALWAYS" promptText="Введите сообщение ..." onAction="#sendMessage"/>
-        <Button fx:id="button" text="Send" onAction="#sendMessage"/>
+        <Button fx:id="button" text="Send" minWidth="70" onAction="#sendMessage"/>
     </HBox>
 </VBox>
